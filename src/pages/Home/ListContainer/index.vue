@@ -3,19 +3,7 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./images/banner1.jpg" />
-            </div>
-          </div>
-          <!-- 如果需要分页器 -->
-          <div class="swiper-pagination"></div>
-
-          <!-- 如果需要导航按钮 -->
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
-        </div>
+        <Carousel :bannerList="bannerList" />
       </div>
       <div class="right">
         <div class="news">
@@ -91,8 +79,71 @@
 </template>
 
 <script>
+import Swiper from 'swiper'
+import { mapState } from 'vuex';
+
 export default {
   name: "ListContainer",
+  mounted(){
+    this.getBannerList()
+  },
+  methods: {
+    getBannerList(){
+      this.$store.dispatch('getBannerList')
+    }
+  },
+  mounted(){
+    this.getBannerList() // 发送ajax请求异步任务
+    /* 
+      挂载完成去实例化swiper,这样不行,因为实例化的时候,页面不一定显示成功,按道理来说挂载完成,页面的dom就算完成了,在此实例化是可以的,但是,这个页面当中的wiper-slide是根据请求回来的数据
+      动态创建生成的,所以必须得保证数据回来之后,在去实例化,有了数据,v-for的结构才会生成
+    */
+    /* setTimeout(() => { 
+      new Swiper ('.swiper-container', { // 同步代码,在数据回来之,结构形成之前,就已经实例化了,所以无法生效,使用定时器指定一个时间,banner部分和floor部分的轮播都生效了
+        loop: true, // 循环模式选项   
+        // 如果需要分页器
+        pagination: {
+          el: '.swiper-pagination',
+        },      
+        // 如果需要前进后退按钮
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+      })  
+    }, 1000); */
+  },
+  computed:{
+    ...mapState({bannerList:state=>state.home.bannerList})
+    // 因为有没有开启namesapced所以无法使用这种方式获取到数据,也不能现在开启了,如果现在开启,之前的dispatch都需要更改方式需要添加home/getCategoryList
+    // ...mapState('home',['bannerList'])
+  },
+/*   watch:{
+    bannerList(){
+      // 不需要深度监视,因为给对象和数组赋值,都能监视到
+      // 为什么需要nextTick,因为数据回来,之后,数据改变,要引起页面的重新渲染,for循环生成新的结构,新旧dom的对比等
+      // 虽然流程是这样,但是vue不会立即去渲染页面,而是等待函数都执行完毕才去,这个时候新的结构还是旧的,但是函数的内容会继续执行,函数执行$refs.获取内容
+      // 还是虚拟dom阶段,如果使用class获取轮播容器,还可能获取到,但是使用refs获取获取最新的结构肯定获取不到,然后在执行函数代码的时候结构也不是完成的新结构,需要等待函数执行完才是新结构
+      // 所以要所以watch配合nexttick(),在下次dom更新的时候,执行其中的回调这样获取的内容都是最新的
+      // 这样官网的解释就好理解多了:下次dom更新循环结束之后延迟执行回调,在修改数据之后,立即执行这个方法,获取更新后的dom
+      //  - 数据改变,引起下次dom更新,等更新完成调用回调 
+      // 并且推荐使用ref,因为如果使用class则也会选择到Floor组件的轮播容器,容器之间需要分开
+      this.$nextTick(()=>{
+        new Swiper (this.$refs.bannerSwiper, { 
+          loop: true, // 循环模式选项   
+          // 如果需要分页器
+          pagination: {
+            el: '.swiper-pagination',
+          },      
+          // 如果需要前进后退按钮
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        })  
+      })
+    }
+  } */
 };
 </script>
 
