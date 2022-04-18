@@ -17,6 +17,9 @@ export default {
   components: {
     // 这里的名字是Header为html标签,但是可以使用,因为首字母大写的,在使用的时候必须也是大写字母开头,如果不是html同名标签,大写开头注册,在使用的时候可以小写字母开头使用
     Header,Footer
+  },
+  mounted(){
+    this.$store.dispatch('getCategoryList')
   }
 }
 </script>
