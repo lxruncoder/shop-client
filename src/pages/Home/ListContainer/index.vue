@@ -79,7 +79,6 @@
 </template>
 
 <script>
-import Swiper from 'swiper'
 import { mapState } from 'vuex';
 
 export default {

@@ -39,7 +39,11 @@
             class="input-error input-xxlarge"
             v-model="keyword"
           />
-          <button class="sui-btn btn-xlarge btn-danger" type="button" @click="toSearch">
+          <button
+            class="sui-btn btn-xlarge btn-danger"
+            type="button"
+            @click="toSearch"
+          >
             搜索
           </button>
         </form>
@@ -51,18 +55,37 @@
 <script>
 export default {
   name: "Header",
-  data(){
+  data() {
     return {
-      keyword:''
-    }
+      keyword: "",
+    };
+  },
+  mounted() {
+    this.$bus.$on("clearKeyword", () => {
+      this.keyword = "";
+    });
+  },
+  beforeDestroy() {
+    this.$bus.$off("clearKeyword");
   },
   methods: {
-    toSearch(){
-      const location = {name:'search',params:{keyword:this.keyword || undefined}}
-      location.query = this.$route.query
-      this.$router.push(location)
-    }
-  }
+    toSearch() {
+      const location = {
+        name: "search",
+        params: { keyword: this.keyword || undefined },
+      };
+      location.query = this.$route.query;
+      // 因为这里携带了params参数,所以用path来判断,无法匹配,所以这里用name来判断
+      if (this.$route.name !== "search") {
+        // console.log(this.$route.path)
+        // 验证了如果使用patch判断,第二次点击因为路径携带了参数无法匹配到search,所以要用name来判断
+        this.$router.push(location);
+      } else {
+        // console.log(this.$route.path)
+        this.$router.replace(location);
+      }
+    },
+  },
 };
 </script>
 

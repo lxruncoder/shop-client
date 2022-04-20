@@ -6,6 +6,7 @@
     <!-- <Footer v-show="$route.path!=='/register' && $route.path!=='/login'" /> -->
     <!-- 第二种方式,通过路由元信息配置,给login和register配置isHidden为true,则上来是现实的取反,v-show为false就不显示了 -->
     <Footer v-show="!$route.meta.isHidden" />
+
   </div>
 </template>
 

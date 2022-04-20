@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import Swiper from 'swiper'
 export default {
   name: "Floor",
   // floor的数据是从vuex中获取,在从父组件传递过来的,如果修改了其属性,则父组件中的数据,以及vuex中的数据都会改变
