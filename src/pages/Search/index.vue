@@ -47,13 +47,37 @@
             <div class="navbar-inner filter">
               <ul class="sui-nav">
                 <!-- 给每个li动态的添加背景颜色,条件是根据order的前半部分如果为1,就给综合添加,如果是2就是价格添加 -->
-                <li :class="{active:sortFlag === '1'}" @click="sortForSearch('1')">
+                <li
+                  :class="{ active: sortFlag === '1' }"
+                  @click="sortForSearch('1')"
+                >
                   <!-- 添加额外的i标签用来显示箭头,箭头是否显示的条件跟背景颜色添加的条件相同,同时i标签iconfont是必须的,这个前缀可以在创建iconfont项目的时候设置,具体显示哪一种需要根据order后半部分决定 -->
                   <!-- 这里的[0]和[1]可以根据计算属性获取,来简化表达式的写法 -->
-                  <a>综合<i v-show="sortFlag === '1'" class="iconfont" :class="{'shop-long-arrow-down':sortType==='desc','shop-long-arrow-up':sortType==='asc'}"></i></a>           
+                  <a
+                    >综合<i
+                      v-show="sortFlag === '1'"
+                      class="iconfont"
+                      :class="{
+                        'shop-long-arrow-down': sortType === 'desc',
+                        'shop-long-arrow-up': sortType === 'asc',
+                      }"
+                    ></i
+                  ></a>
                 </li>
-                <li :class="{active:sortFlag === '2'}" @click="sortForSearch('2')">
-                  <a>价格<i v-show="sortFlag === '2'" class="iconfont" :class="{'shop-long-arrow-down':sortType==='desc','shop-long-arrow-up':sortType==='asc'}"></i></a>
+                <li
+                  :class="{ active: sortFlag === '2' }"
+                  @click="sortForSearch('2')"
+                >
+                  <a
+                    >价格<i
+                      v-show="sortFlag === '2'"
+                      class="iconfont"
+                      :class="{
+                        'shop-long-arrow-down': sortType === 'desc',
+                        'shop-long-arrow-up': sortType === 'asc',
+                      }"
+                    ></i
+                  ></a>
                 </li>
               </ul>
             </div>
@@ -95,35 +119,13 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination
+            :currentPageNo="searchParams.pageNo"
+            :total="searchInfo.total"
+            :pageSize="searchParams.pageSize"
+            :continueNo="5"
+            @paginationForSearch="paginationForSearch"
+          />
         </div>
       </div>
     </div>
@@ -131,7 +133,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
   name: "Search",
@@ -152,7 +154,7 @@ export default {
         // 默认的搜索条件
         order: "1:desc",
         pageNo: 1,
-        pageSize: 10,
+        pageSize: 5,
       },
     };
   },
@@ -186,12 +188,12 @@ export default {
         keyword,
       };
       // 将参数值为空字符串的去掉,然后在赋值,直接请求三级分类实现跳转,这里其实只有一个trademark是空字符串,为什么没有keyword,因为它是从params中获取的,获取不到本就为undefined
-      const keys = Object.keys(searchParams)
-      keys.forEach(key=>{
-        if(searchParams[key] === ''){
-          delete searchParams[key]
+      const keys = Object.keys(searchParams);
+      keys.forEach((key) => {
+        if (searchParams[key] === "") {
+          delete searchParams[key];
         }
-      })
+      });
       // 重新赋值给搜索条件对象
       this.searchParams = searchParams;
     },
@@ -212,6 +214,8 @@ export default {
       // 所有的query参数获取到的是undefined,undefined会将之前的categoryName和cateGoryId替换
       // 也就不用手动的删除categoryName和id了
       // 会被自动在整理参数的时候获取不到自动获取为undeinfed
+      // 在分页搜索之后,需要在改变搜索条件,应该将页码设置为1
+      this.searchParams.pageNo = 1
       this.$router.replace({ name: "search", params: this.$route.params });
     },
     // 删除关键字重新搜索,这个就是在分类搜索上继续搜索,所以不用清空id
@@ -219,6 +223,8 @@ export default {
       // this.searchParams.keyword = undefined;
       // this.getSearchInfo();
       // 通过引起路径的变化,导致监视属性工作,同样也不需要手动清除关键字
+      // 在分页搜索之后,需要在改变搜索条件,应该将页码设置为1
+      this.searchParams.pageNo = 1
       this.$router.replace({ name: "search", query: this.$route.query });
       // 通知header组件清空keyword
       this.$bus.$emit("clearKeyword");
@@ -228,11 +234,15 @@ export default {
       const trademarkStr = `${trademark.tmId}:${trademark.tmName}`;
       // 整理数据格式,数据格式是接口要求的数据格式,需要自己拼接整理
       this.searchParams.trademark = trademarkStr;
+      // 在分页搜索之后,需要在改变搜索条件,应该将页码设置为1
+      this.searchParams.pageNo = 1
       this.getSearchInfo();
     },
     // 删除品牌重新搜索
     deleteTrademarkForSearch() {
       this.searchParams.trademark = undefined;
+      // 在分页搜索之后,需要在改变搜索条件,应该将页码设置为1
+      this.searchParams.pageNo = 1
       this.getSearchInfo();
     },
     // 自定义事件点击属性进行搜索
@@ -248,47 +258,62 @@ export default {
       */
 
       // 使用some方法实现,如果有item和条件相同,返回值为true,every方法,必须全部相同才返回true
-      const isRepeat = this.searchParams.props.some(item=>{
-        return item === attrStr
-      })
+      const isRepeat = this.searchParams.props.some((item) => {
+        return item === attrStr;
+      });
       // 如果重复就不添加也不发送请求
       if (!isRepeat) {
+        
         this.searchParams.props.push(attrStr);
+        // 在分页搜索之后,需要在改变搜索条件,应该将页码设置为1
+        this.searchParams.pageNo = 1
         this.getSearchInfo();
       }
-
     },
     // 删除属性搜索,本质就是删除props数组中的指定位置的元素,这个index,需要通过参数传递过来
     deleteAttrForSearch(index) {
       this.searchParams.props.splice(index, 1);
+      // 在分页搜索之后,需要在改变搜索条件,应该将页码设置为1
+      this.searchParams.pageNo = 1
       this.getSearchInfo();
     },
     // 点击排序进行搜索
     sortForSearch(sortFlag) {
-      const originSortFlag = this.sortFlag
-      const originSortType = this.sortType
-      let newOrder = ''
+      const originSortFlag = this.sortFlag;
+      const originSortType = this.sortType;
+      let newOrder = "";
       // 如果点击的和原来的是一个,那么就切换排序的规则是升序还是降序
-      if(sortFlag === originSortFlag) {
-        newOrder = `${originSortFlag}:${originSortType === 'desc' ? 'asc' : 'desc'}`
-      }else {
+      if (sortFlag === originSortFlag) {
+        newOrder = `${originSortFlag}:${
+          originSortType === "desc" ? "asc" : "desc"
+        }`;
+      } else {
         // 如果点击的不是一个,那么就按照点击的来,并且指定默认的规则是desc
-        newOrder = `${sortFlag}:desc`
+        newOrder = `${sortFlag}:desc`;
       }
       // 最终重新发送请求
-      this.searchParams.order = newOrder
+      this.searchParams.order = newOrder;
+      // 在分页搜索之后,需要在改变搜索条件,应该将页码设置为1
+      this.searchParams.pageNo = 1
+      this.getSearchInfo();
+    },
+    // 分页搜索
+    paginationForSearch(page){
+      this.searchParams.pageNo = page
       this.getSearchInfo()
     }
   },
   computed: {
     ...mapGetters(["goodsList"]),
     // 使用计算属性对排序进行简化操作
-    sortFlag(){
-      return this.searchParams.order.split(':')[0]
+    sortFlag() {
+      return this.searchParams.order.split(":")[0];
     },
-    sortType(){
-      return this.searchParams.order.split(':')[1]
-    }
+    sortType() {
+      return this.searchParams.order.split(":")[1];
+    },
+    // 计算出searchInfo来获取总条数
+    ...mapState({ searchInfo: (state) => state.search.searchInfo }),
   },
   watch: {
     $route() {
