@@ -19,3 +19,7 @@ export const reqFloorList = () => {
 export const reqSearchInfo = (searchParams) => {
   return request({ url: "/list", method: "post", data: searchParams });
 };
+// 获取详情数据
+export const reqDetailInfo = (skuId) => {
+  return request({ url: `/item/${skuId}`, method: "get" });
+};

@@ -2,11 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 // vue-router的use可以在main.js中进行,但是vuex则绝对不可以,必须先use在创建new Vuex.Store()
 Vue.use(VueRouter)
-// 引入需要的组件
-import Home from '@/pages/Home'
-import Search from '@/pages/Search'
-import Login from '@/pages/Login'
-import Register from '@/pages/Register'
+
+// 模块化之后引入路由配置
+import routes from './routes'
 
 const originPush = VueRouter.prototype.push
 const originReplace = VueRouter.prototype.replace
@@ -27,32 +25,10 @@ VueRouter.prototype.replace = function(location,onResolve,onReject){
 }
 
 const router = new VueRouter({
-  routes:[
-    {
-      path:'/home',
-      component:Home
-    },
-    {
-      path:'/search/:keyword?',
-      name:'search',
-      component:Search
-    },    
-    {
-      path:'/login',
-      component:Login,
-      meta:{isHidden:true}
-    },    
-    {
-      path:'/register',
-      component:Register,
-      meta:{isHidden:true}
-
-    },
-    // 配置重定向路由
-    {
-      path:'/',
-      redirect:'/home'
-    }
-  ]
+  scrollBehavior(to, from, savedPosition) {
+    // 始终滚动到顶部,这里官网写的是top,但是这里top不好使,可能跟vuerouter的版本有关系
+    return { y: 0 }
+  },
+  routes
 })
 export default router
