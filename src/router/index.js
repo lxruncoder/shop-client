@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 // vue-router的use可以在main.js中进行,但是vuex则绝对不可以,必须先use在创建new Vuex.Store()
 Vue.use(VueRouter)
 
+
+
 // 模块化之后引入路由配置
 import routes from './routes'
 

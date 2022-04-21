@@ -94,7 +94,7 @@
                 <a href="javascript:" class="mins" @click="skuNum >1 ? skuNum-- : skuNum = 1">-</a>
               </div>
               <div class="add"> 
-                <a href="javascript:">加入购物车</a>
+                <a href="javascript:" @click="addShopCart">加入购物车</a>
               </div>
             </div>
           </div>
@@ -366,6 +366,26 @@ export default {
       // 遍历让所有的isChecked为0
       spuSaleAttrValueList.forEach(item=>item.isChecked = '0')
       spuSaleAttrValue.isChecked = '1'
+    },
+    /* 
+      之前的跳转都是直接跳转,因为在跳转之前不需要发送请求,而是跳转过去之后发送请求获取数据
+      而添加购物车不一样,当点击添加购物车之后,需要先将请求发给后台,后台需要将购物车数据存储到数据库,请求成功之后,会返回信息,根据这个信息在去跳转
+      否则购物车添加失败,而我们还是跳转过去了,就会出现问题
+    */
+    async addShopCart() {
+      try {
+        // dispatch本质就是调用函数,可以获取到返回值,actions中为async函数,返回值就是Promise,这里能接收到一个Promise实例,该Promise是成功还是失败就看actions中async方法的返回值
+        // 这里用await就能得到成功的值(如果返回的基本数据类型则都是成功的,所以用值来判断),可以使用成功的值来判断,是否添加购物车成功
+        // 但是这样就导致actions中的async返回的Promise永远都是成功的
+        await this.$store.dispatch('addShopCart',{skuId:this.skuId,skuNum:this.skuNum})
+        // 跳转到添加购物车成功页面,将skuId和skuNum携带过去
+        this.$router.push(`/addcartsuccess?skuId=${this.skuId}&skuNum=${this.skuNum}`)
+        // 将skuInfo因为是对象,复杂信息最好不要通过路由传参的方式,所以采用存储到本地
+        sessionStorage.setItem('SKUINFO_KEY',JSON.stringify(this.skuInfo))
+      } catch (error) { 
+        // 如果是失败的,则抛出异常,使用try-catch进行处理,抛出的异常就是错误的原因
+        alert(error.message)
+      }
     }
   },
   computed: {
@@ -376,6 +396,7 @@ export default {
       return this.skuInfo.skuImageList || [];
     },
   },
+
 };
 </script>
 

@@ -23,3 +23,19 @@ export const reqSearchInfo = (searchParams) => {
 export const reqDetailInfo = (skuId) => {
   return request({ url: `/item/${skuId}`, method: "get" });
 };
+// 添加购物车
+export const reqAddOrUpdateShopCart = (skuId, skuNum) => {
+  return request({ url: `/cart/addToCart/${skuId}/${skuNum}`, method: "post" });
+};
+// 点击去购物车结算之后,获取购物车的信息
+export const reqCartList = ()=>{
+  return request({url:'/cart/cartList',method:'get'})
+}
+// 修改购物车的选中状态:isChecked为1代表选中,为0代表取消选中
+export const reqIsChecked = (skuId,isChecked)=>{
+  return request({url:`/cart/checkCart/${skuId}/${isChecked}`,method:'get'})
+}
+// 删除购物车信息:注意请求方式为delete
+export const reqDeleteShopCart=(skuId)=>{
+  return request({url:`/cart/deleteCart/${skuId}`,method:'delete'})
+}
