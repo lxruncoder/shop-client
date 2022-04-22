@@ -6,6 +6,10 @@ import Register from '@/pages/Register'
 import Detail from '@/pages/Detail'
 import AddCartSuccess from '@/pages/AddCartSuccess'
 import ShopCart from '@/pages/ShopCart'
+import Trade from '@/pages/Trade'
+import Pay from '@/pages/Pay'
+import PaySuccess from '@/pages/PaySuccess'
+import Center from '@/pages/Center'
 
 export default [
   {
@@ -51,6 +55,26 @@ export default [
     component: ShopCart,
     meta:{title:'我的购物车'}
 
+  },
+  {
+    path:'/trade',
+    component:Trade,
+    meta:{title:'订单页面'}
+  },
+  {
+    path:'/pay',
+    component:Pay,
+    meta:{title:'支付页面'}
+  },
+  {
+    path:'/paysuccess',
+    component:PaySuccess,
+    meta:{title:'支付成功页面'}
+  },
+  {
+    path:'/center',
+    component:Center,
+    meta:{title:'个人中心'}
   },
   // 配置重定向路由
   {

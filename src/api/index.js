@@ -59,3 +59,23 @@ export const reqUserInfo = ()=>{
 export const reqLogout=()=>{
   return request({url:'/user/passport/logout',method:'get'})
 }
+// 获取用户的地址
+export const reqUserAddress = ()=>{
+  return request({url:'/user/userAddress/auth/findUserAddressList',method:'get'})
+}
+// 获取订单交易页信息
+export const reqTradeInfo=()=>{
+  return request({url:'/order/auth/trade',method:'get'})
+}
+// 提交订单
+export const reqSubmitOrder=(tradeNo,tradeInfo)=>{
+  return request({url:`/order/auth/submitOrder?tradeNo=${tradeNo}`,data:tradeInfo,method:'post'})
+}
+// 获取订单的支付信息
+export const reqPayInfo = (orderId)=>{
+  return request({url:`/payment/weixin/createNative/${orderId}`,method:'get'})
+}
+// 查询支付的状态
+export const reqPayStutas = (orderId)=>{
+  return request({url:`/payment/weixin/queryPayStatus/${orderId}`,method:'get'})
+}

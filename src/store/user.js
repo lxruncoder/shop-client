@@ -5,6 +5,7 @@ import {
   reqUserLogin,
   reqUserInfo,
   reqLogout,
+  reqUserAddress
 } from "@/api";
 // 当该vuex一加载就会自动发送请求获取临时标识
 const state = {
@@ -15,6 +16,8 @@ const state = {
   token: localStorage.getItem("TOKEN_KEY"),
   // 根据token获取的用户信息
   userInfo: {},
+  // 用户的收获地址
+  userAddress: []
 };
 const mutations = {
   RECEIVE_CODE(state, code) {
@@ -32,6 +35,9 @@ const mutations = {
   RESET_USERINFO(state) {
     state.userInfo = {};
   },
+  RECEIVE_ADDRESS(state,userAddress){
+    state.userAddress = userAddress
+  }
 };
 const actions = {
   // 获取验证码
@@ -96,6 +102,13 @@ const actions = {
       return Promise.reject(new Error("failed"));
     }
   },
+  // 获取用户的收获地址
+  async getUserAddress({commit}) {
+    const result = await reqUserAddress()
+    if(result.code === 200) {
+      commit('RECEIVE_ADDRESS',result.data)
+    }
+  }
 };
 const getters = {};
 
