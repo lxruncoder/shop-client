@@ -10,36 +10,47 @@ import ShopCart from '@/pages/ShopCart'
 export default [
   {
     path:'/home',
-    component:Home
+    component:Home,
+    meta:{title:'首页'}
   },
   {
     path:'/search/:keyword?',
     name:'search',
-    component:Search
+    component:Search,
+    meta:{title:'搜索'}
+
   },    
   {
     path:'/login',
     component:Login,
-    meta:{isHidden:true}
+    meta:{isHidden:true},
+    meta:{title:'登陆'}
+
   },    
   {
     path:'/register',
     component:Register,
-    meta:{isHidden:true}
+    meta:{isHidden:true,title:'注册'}
 
   },
   {
     path:'/detail/:skuId',
     name:'detail',
-    component:Detail
+    component:Detail,
+    meta:{title:'详情'}
+
   },
   {
     path:'/addcartsuccess',
-    component:AddCartSuccess
+    component:AddCartSuccess,
+    meta:{title:'添加购物车成功'}
+
   },
   {
     path:'/shopcart',
-    component: ShopCart
+    component: ShopCart,
+    meta:{title:'我的购物车'}
+
   },
   // 配置重定向路由
   {

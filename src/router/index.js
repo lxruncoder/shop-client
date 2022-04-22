@@ -1,5 +1,7 @@
+
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store'
 // vue-router的use可以在main.js中进行,但是vuex则绝对不可以,必须先use在创建new Vuex.Store()
 Vue.use(VueRouter)
 
@@ -32,5 +34,43 @@ const router = new VueRouter({
     return { y: 0 }
   },
   routes
+})
+// 全局前置导航守卫,用来对token进行校验(根据token获取用户的信息)
+router.beforeEach(async (to,from,next)=>{
+  // 获取用户的token
+  const token = store.state.user.token
+  // 获取用户的信息,这里不要用对象判断,因为空对象也为true
+  const userInfo = store.state.user.userInfo.name
+  if(token) {
+    // 登陆过如果还去登陆页面,就不让去了,就去首页
+    if(to.path === '/login') {
+      next(false) // 注意next后的代码会执行
+      // 如果不是去登陆页面去判断用户是否有信息
+    }else {
+      // 如果登陆并且有用户信息,无条件放行
+      if(userInfo) {
+        next()
+      }else {
+        // 用户已经登陆了,但是没有获取用户的信息
+        try {
+          await store.dispatch('getUserInfo')
+          // 获取用户信息成功无条件放行
+          next()
+        } catch (error) {
+          // 获取用户信息失败,代表token可能过期,将用户的过期token清理掉,重新跳转到登陆页
+          store.dispatch('clearToken')
+          next('/login')
+        }
+      }
+    }
+  }else {
+    // 没有登陆先放行
+    next()
+  }
+})
+
+// 可以通过全局后置导航守卫设置网页的标题
+router.afterEach((to,from)=>{
+  document.title = to.meta.title || '尚品汇'
 })
 export default router

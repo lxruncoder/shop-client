@@ -39,3 +39,23 @@ export const reqIsChecked = (skuId,isChecked)=>{
 export const reqDeleteShopCart=(skuId)=>{
   return request({url:`/cart/deleteCart/${skuId}`,method:'delete'})
 }
+// 点击获取注册的验证码
+export const reqCode = (phone)=>{
+  return request({url:`/user/passport/sendCode/${phone}`,method:'get'})
+}
+// 注册
+export const reqUserRegister = (userInfo)=>{
+  return request({url:'/user/passport/register',data:userInfo,method:'post'})
+}
+// 登陆
+export const reqUserLogin = (userInfo)=>{
+  return request({url:'/user/passport/login',data:userInfo,method:'post'})
+}
+// 根据token获取用户的信息
+export const reqUserInfo = ()=>{
+  return request({url:'/user/passport/auth/getUserInfo',method:'get'})
+}
+// 退出登陆
+export const reqLogout=()=>{
+  return request({url:'/user/passport/logout',method:'get'})
+}

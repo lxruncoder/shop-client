@@ -15,6 +15,10 @@ request.interceptors.request.use((config)=>{
   if(store.state.user.userTempId) {
     config.headers.userTempId = store.state.user.userTempId
   }
+  // 如果有token携带token
+  if(store.state.user.token) {
+    config.headers.token = store.state.user.token
+  }
   return config
 })
 request.interceptors.response.use(
