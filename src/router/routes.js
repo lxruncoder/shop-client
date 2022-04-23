@@ -1,5 +1,5 @@
 // 引入需要的组件
-import Home from '@/pages/Home'
+// import Home from '@/pages/Home'
 import Search from '@/pages/Search'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
@@ -12,11 +12,12 @@ import PaySuccess from '@/pages/PaySuccess'
 import Center from '@/pages/Center'
 import MyCenter from '@/pages/Center/MyCenter'
 import GroupCenter from '@/pages/Center/GroupCenter'
+import store from '@/store'
 
 export default [
   {
     path:'/home',
-    component:Home,
+    component:()=>import('@/pages/Home'),
     meta:{title:'首页'}
   },
   {
@@ -30,8 +31,17 @@ export default [
     path:'/login',
     component:Login,
     meta:{isHidden:true},
-    meta:{title:'登陆'}
-
+    meta:{title:'登陆'},
+    beforeEnter: (to, from, next) => {
+      // 引入store获取token
+      const token = store.state.user.token
+      // 如果已经登陆了还来登陆,就去首页,否则让你去
+      if(token) {
+        next('/')
+      }else {
+        next()
+      }
+    }
   },    
   {
     path:'/register',
@@ -49,8 +59,19 @@ export default [
   {
     path:'/addcartsuccess',
     component:AddCartSuccess,
-    meta:{title:'添加购物车成功'}
-
+    meta:{title:'添加购物车成功'},
+    // 去成功页面必须携带skuNum和本存储的本地信息才能去, 注意这里要用to,因为是跳转到该页面携带的参数
+    beforeEnter:(to,from,next)=>{
+      const skuNum = to.query.skuNum
+      const skuInfo = sessionStorage.getItem('SKUINFO_KEY')
+      console.log(skuNum)
+      if(skuNum && skuInfo) {
+        next()
+      }else {
+        next(false)
+      }
+    }
+    
   },
   {
     path:'/shopcart',
@@ -61,12 +82,20 @@ export default [
   {
     path:'/trade',
     component:Trade,
-    meta:{title:'订单页面'}
+    meta:{title:'订单页面'},
   },
   {
     path:'/pay',
     component:Pay,
-    meta:{title:'支付页面'}
+    meta:{title:'支付页面'},
+    // 只有从trade页面才能跳转到支付页面
+    beforeEnter(to,from,next) {
+      if(from.path === '/trade') {
+        next()
+      }else {
+        next(false)
+      }
+    }
   },
   {
     path:'/paysuccess',

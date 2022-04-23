@@ -44,7 +44,7 @@ router.beforeEach(async (to,from,next)=>{
   if(token) {
     // 登陆过如果还去登陆页面,就不让去了,就去首页
     if(to.path === '/login') {
-      next(false) // 注意next后的代码会执行
+      next('/') // 注意next后的代码会执行
       // 如果不是去登陆页面去判断用户是否有信息
     }else {
       // 如果登陆并且有用户信息,无条件放行
@@ -65,7 +65,15 @@ router.beforeEach(async (to,from,next)=>{
     }
   }else {
     // 没有登陆先放行
-    next()
+    // 追加后续操作:如果没有登陆就交易,支付,个人中心相关的页面,让其去登陆,去其他可以
+    const targetPath = to.path
+    if(targetPath.indexOf('/trade') !== -1 || targetPath.indexOf('pay') !== -1 || targetPath.startsWith('/center')) {
+      // 并且在去往登陆页面的时候,将之前要去的位置带过去,那么登陆后直接跳转到之前要去的位置
+      next(`/login?targetPath=${targetPath}`)
+    }else {
+      // 去其他页面可以放行
+      next()
+    }
   }
 })
 

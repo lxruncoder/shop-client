@@ -10,29 +10,63 @@
       </h3>
       <div class="content">
         <label>手机号:</label>
-        <input type="text" placeholder="请输入你的手机号" v-model="userInfo.phone" />
-        <span class="error-msg">错误提示信息</span>
+        <input
+          type="text"
+          placeholder="请输入你的手机号"
+          v-model="userInfo.phone"
+          name="phone"
+          v-validate="{ required: true, regex: /^1\d{10}$/ }"
+          :class="{ invalid: errors.has('phone') }"
+        />
+        <span class="error-msg">{{ errors.first("phone") }}</span>
       </div>
       <div class="content">
         <label>验证码:</label>
-        <input type="text" placeholder="请输入验证码" v-model="userInfo.code" />
-        <button style="height:40px" @click="getCode">点击获取验证码</button>
-        <span class="error-msg">错误提示信息</span>
+        <input
+          type="text"
+          placeholder="请输入验证码"
+          v-model="userInfo.code"
+          name="code"
+          v-validate="{ required: true, regex: /^\d{6}$/ }"
+          :class="{ invalid: errors.has('code') }"
+        />
+        <button style="height: 40px" @click="getCode">点击获取验证码</button>
+        <span class="error-msg">{{ errors.first("code") }}</span>
       </div>
       <div class="content">
         <label>登录密码:</label>
-        <input type="text" placeholder="请输入你的登录密码" v-model="userInfo.password" />
-        <span class="error-msg">错误提示信息</span>
+        <input
+          type="text"
+          placeholder="请输入你的登录密码"
+          v-model="userInfo.password"
+          name="password"
+          v-validate="{ required: true, regex: /^[0-9 a-z A-Z]{6,20}$/ }"
+          :class="{ invalid: errors.has('password') }"
+        />
+        <span class="error-msg">{{ errors.first("password") }}</span>
       </div>
       <div class="content">
         <label>确认密码:</label>
-        <input type="text" placeholder="请输入确认密码" v-model="userInfo.repeatPassword" />
-        <span class="error-msg">错误提示信息</span>
+        <input
+          type="text"
+          placeholder="请输入确认密码"
+          v-model="userInfo.repeatPassword"
+          name="repeatPassword"
+          v-validate="{ required: true, is: userInfo.password }"
+          :class="{ invalid: errors.has('repeatPassword') }"
+        />
+        <span class="error-msg">{{ errors.first("repeatPassword") }}</span>
       </div>
       <div class="controls">
-        <input name="m1" type="checkbox" v-model="userInfo.agree" />
+        <input
+          name="agree"
+          type="checkbox"
+          v-model="userInfo.agree"
+          v-validate="{ agree: true }"
+          :class="{ invalid: errors.has('agree') }"
+        />
         <span>同意协议并注册《尚品汇用户协议》</span>
-        <span class="error-msg">错误提示信息</span>
+        <span class="error-msg">{{ errors.first("agree") }}</span>
       </div>
       <div class="btn">
         <button @click="register">完成注册</button>
@@ -60,43 +94,50 @@
 <script>
 export default {
   name: "Register",
-  data(){
+  data() {
     return {
       // 收集的数据名称要和请求接口需要的保持一致
-      userInfo:{
-        phone:'',
-        code:'',
-        password:'',
-        repeatPassword:'',
-        agree:true
-      }
-    }
+      userInfo: {
+        phone: "",
+        code: "",
+        password: "",
+        repeatPassword: "",
+        agree: true,
+      },
+    };
   },
-  methods:{
+  methods: {
     // 点击获取验证码
-    async getCode(){
+    async getCode() {
       try {
-        await this.$store.dispatch('getCode',this.userInfo.phone)  
+        await this.$store.dispatch("getCode", this.userInfo.phone);
         // 如果获取验证码成功就自动填写
-        this.userInfo.code = this.$store.state.user.code
+        this.userInfo.code = this.$store.state.user.code;
       } catch (error) {
-        alert(error.message)
+        alert(error.message);
       }
-    },  
-    async register(){
-      const {phone,code,password,repeatPassword} = this.userInfo
-      if(phone && code && password && password === repeatPassword) {
+    },
+    async register() {
+      // 整体校验,如果为true,才会走里面的内容
+      const success = await this.$validator.validateAll();
+      if (success) {
+        const { phone, code, password } = this.userInfo;
+
         try {
           // 需要的参数是接口需要的
-          await this.$store.dispatch('userRegister',{phone,password,code})
+          await this.$store.dispatch("userRegister", {
+            phone,
+            password,
+            code,
+          });
           // 登陆成功之后需要跳转到登陆页面
-          this.$router.push('/login')
+          this.$router.push("/login");
         } catch (error) {
-          alert(error.message)
+          alert(error.message);
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

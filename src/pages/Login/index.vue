@@ -82,7 +82,14 @@
         const {phone,password} = this.userInfo
         try {
           await this.$store.dispatch('userLogin',{phone,password})
-          this.$router.push('/home')
+          // 不盲目的直接跳转到home,如果带有targetPath,证明用户企图访问某个页面,登陆后让他直接去某个页面
+          const targetPath = this.$route.query.targetPath
+          // const targetPath = this.$route.query.targetPath || '/'  可以用这种方式就不需要判断了
+          if(targetPath) {
+            this.$router.push(targetPath)
+          }else {
+            this.$router.push('/')
+          }
         } catch (error) {
           alert(error)
         }

@@ -24,6 +24,12 @@ Vue.config.productionTip = false
 Vue.component(TypeNav.name,TypeNav)
 Vue.component(Carousel.name,Carousel)
 Vue.component(Pagination.name,Pagination)
+// 实现图片懒加载
+import VueLazyLoad from 'vue-lazyload'
+import loading from '@/assets/images/loading.gif'
+Vue.use(VueLazyLoad,{loading})
+// 使用验证规则
+import '@/utils/veeValidate'
 
 new Vue({
   router,
