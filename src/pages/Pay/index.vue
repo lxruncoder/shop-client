@@ -142,10 +142,10 @@ export default {
                 this.$message.info('请确认您已经支付了')
               }
               // 假装支付成功代码
-              /* clearInterval(this.timer);
+              clearInterval(this.timer);
               this.timer = null;
               done();
-              this.$router.push("/paysuccess"); */
+              this.$router.push("/paysuccess");
 
             } else if (action === "cancel") {
               // 点击取消按钮

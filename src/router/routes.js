@@ -10,6 +10,8 @@ import Trade from '@/pages/Trade'
 import Pay from '@/pages/Pay'
 import PaySuccess from '@/pages/PaySuccess'
 import Center from '@/pages/Center'
+import MyCenter from '@/pages/Center/MyCenter'
+import GroupCenter from '@/pages/Center/GroupCenter'
 
 export default [
   {
@@ -74,7 +76,26 @@ export default [
   {
     path:'/center',
     component:Center,
-    meta:{title:'个人中心'}
+    meta:{title:'个人中心'},
+    // 重定向路由第一种配置方式,路径要写全
+    // redirect:'/center/mycenter',
+    children:[
+      {
+        path:'mycenter',
+        component:MyCenter,
+        meta:{title:'我的个人中心'},
+      },
+      {
+        path:'groupcenter',
+        component:GroupCenter,
+        meta:{title:'团队个人中心'},
+      },
+      // 第二种配置方式,直接在子路由中配置,path为空,路径不能写全
+      {
+        path:'',
+        redirect:'mycenter'
+      }
+    ]
   },
   // 配置重定向路由
   {
